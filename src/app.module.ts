@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-   import { TypeOrmModule } from '@nestjs/typeorm';
-   import { ConfigModule, ConfigService } from '@nestjs/config';
-   import { User } from './users/user.entity'; // Adjust path as needed
-   import { UsersModule } from './users/users.module'; // Adjust path as needed
-   import { AuthModule } from './auth/auth.module'; // Adjust path as needed
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from './users/user.entity'; // Adjust path as needed
+import { UsersModule } from './users/users.module'; // Adjust path as needed
+import { AuthModule } from './auth/auth.module'; // Adjust path as needed
+import { DocumentsModule } from './documents/documents.module';
+import { Document } from './documents/document.entity';
 
    @Module({
      imports: [
@@ -20,13 +22,14 @@ import { Module } from '@nestjs/common';
            username: configService.get<string>('DB_USERNAME'),
            password: configService.get<string>('DB_PASSWORD'),
            database: configService.get<string>('DB_DATABASE'),
-           entities: [User],
+           entities: [User,Document],
            synchronize: true, // Note: Set to false in production
          }),
          inject: [ConfigService],
        }),
        UsersModule,
        AuthModule,
+       DocumentsModule,
      ],
    })
    export class AppModule {}
