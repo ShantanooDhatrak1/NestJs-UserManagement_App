@@ -74,4 +74,12 @@ export class DocumentsController {
         const file = fs.createReadStream(filePath);
         return new StreamableFile(file);
     }
+
+    @Post(':id/ingest')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('admin', 'editor')
+    async triggerIngestion(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.documentsService.triggerIngestion(id, req.user.username);
+    }
+
 }

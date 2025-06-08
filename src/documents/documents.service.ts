@@ -49,4 +49,19 @@ export class DocumentsService {
     return { path: `uploads/${doc.filename}`, mimetype: doc.mimetype };
   }
 
+  async triggerIngestion(id: number, triggeredBy: string) {
+    const doc = await this.findOne(id);
+    if (!doc) {
+      throw new NotFoundException('Document not found');
+    }
+
+    console.log(`Ingestion triggered for ${doc.filename} by ${triggeredBy}`);
+
+    return {
+      message: 'Ingestion triggered successfully',
+      documentId: doc.id,
+      triggeredBy,
+      timestamp: new Date(),
+    };
+  }
 }
