@@ -26,6 +26,7 @@ export class AuthController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
     register(@Body() registerDto: RegisterUserDto) {
+        console.log("Inside Register User > "); 
         return this.authService.register(registerDto);
     }
 }

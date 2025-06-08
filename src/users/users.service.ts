@@ -11,23 +11,35 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  private users = [
-    { id: 1, username: 'admin', password: bcrypt.hashSync('admin123', 10), role: 'admin' },
-    { id: 2, username: 'user', password: bcrypt.hashSync('user123', 10), role: 'user' },
-  ];
-
-  async findByUsername(username: string) {
-    return this.users.find(user => user.username === username);
-    // For actual DB usage: return this.userRepo.findOne({ where: { username } });
+  // ✅ Use database to find user by username
+  async findByUsername(username: string): Promise<User | null> {
+    return this.userRepo.findOne({ where: { username } });
   }
 
-  async findById(id: number) {
-    return this.users.find(user => user.id === id);
-    // For actual DB usage: return this.userRepo.findOne({ where: { id } });
+  // ✅ Use database to find user by ID
+  async findById(id: number): Promise<User | null> {
+    return this.userRepo.findOne({ where: { id } });
   }
 
-  async createUser(data: Partial<User>) {
+  // ✅ Save a new user to the database
+  async createUser(data: Partial<User>): Promise<User> {
     const user = this.userRepo.create(data);
+    return this.userRepo.save(user);
+  }
+
+  // ✅ Return all users (admin use-case)
+  async findAll(): Promise<User[]> {
+    return this.userRepo.find({
+      select: ['id', 'username', 'role'], // avoid exposing password
+    });
+  }
+
+  // ✅ Update a user’s role by ID
+  async updateUserRole(id: number, role: 'admin' | 'user' | 'editor'): Promise<User> {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) throw new Error('User not found');
+
+    user.role = role;
     return this.userRepo.save(user);
   }
 }

@@ -1,22 +1,29 @@
-import { Controller, Get, UseGuards, Request, Patch, Param, Body} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
+import { Body, Param, Patch } from '@nestjs/common';
 
 
 @Controller('users')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsersController {
+  constructor(private readonly usersService: UsersService) { }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Get()
-  @Roles('admin') // Only admin can access
-  getUsers(@Request() req) {
-    console.log("Inside getUsers")
-    return ['User1', 'User2'];
+  async getAllUsers() {
+    return this.usersService.findAll();
   }
 
-  @Get('profile')
-  @Roles('user', 'admin') // Any logged-in user can access
-  getProfile(@Request() req) {
-    return req.user;
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Patch(':id/role')
+  async updateRole(
+    @Param('id') id: number,
+    @Body('role') role: 'admin' | 'user' | 'editor',
+  ) {
+    return this.usersService.updateUserRole(id, role);
   }
 }
