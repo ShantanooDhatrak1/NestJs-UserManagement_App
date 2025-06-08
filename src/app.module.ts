@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './users/user.entity'; // Adjust path as needed
-import { UsersModule } from './users/users.module'; // Adjust path as needed
-import { AuthModule } from './auth/auth.module'; // Adjust path as needed
+import { User } from './users/user.entity';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import { DocumentsModule } from './documents/documents.module';
 import { Document } from './documents/document.entity';
 
    @Module({
      imports: [
        ConfigModule.forRoot({
-         isGlobal: true, // Makes ConfigModule available globally
-         envFilePath: '.env', // Path to the .env file
+         isGlobal: true,
+         envFilePath: '.env',
        }),
        TypeOrmModule.forRootAsync({
          imports: [ConfigModule],
@@ -23,7 +23,7 @@ import { Document } from './documents/document.entity';
            password: configService.get<string>('DB_PASSWORD'),
            database: configService.get<string>('DB_DATABASE'),
            entities: [User,Document],
-           synchronize: true, // Note: Set to false in production
+           synchronize: true,
          }),
          inject: [ConfigService],
        }),
